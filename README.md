@@ -1,72 +1,72 @@
-<!--
-title: 'Serverless Framework Node SQS Producer-Consumer on AWS'
-description: 'This template demonstrates how to develop and deploy a simple SQS-based producer-consumer service running on AWS Lambda using the traditional Serverless Framework.'
-layout: Doc
-framework: v3
-platform: AWS
-language: nodeJS
-priority: 1
-authorLink: 'https://github.com/serverless'
-authorName: 'Serverless, inc.'
-authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
--->
+<!--  
+title: 'Framework Serverless Node SQS Produtor-Consumidor na AWS'  
+description: 'Este modelo demonstra como desenvolver e implantar um serviço simples de produtor-consumidor baseado em SQS executando no AWS Lambda usando o Framework Serverless tradicional.'  
+layout: Doc  
+framework: v3  
+platform: AWS  
+language: nodeJS  
+priority: 1  
+authorLink: 'https://github.com/serverless'  
+authorName: 'Serverless, Inc.'  
+authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'  
+-->  
 
-# Serverless Framework Node SQS Producer-Consumer on AWS
+# Framework Serverless Node SQS Produtor-Consumidor na AWS  
 
-This template demonstrates how to develop and deploy a simple SQS-based producer-consumer service running on AWS Lambda using the Serverless Framework and the [Lift](https://github.com/getlift/lift) plugin. It allows to accept messages, for which computation might be time or resource intensive, and offload their processing to an asynchronous background process for a faster and more resilient system.
+Este modelo demonstra como desenvolver e implantar um serviço simples de produtor-consumidor baseado em SQS executando no AWS Lambda usando o Framework Serverless e o plugin [Lift](https://github.com/getlift/lift). Ele permite aceitar mensagens cujo processamento pode ser intensivo em tempo ou recursos e transferir esse processamento para um processo assíncrono em segundo plano, tornando o sistema mais rápido e resiliente.  
 
-## Anatomy of the template
+## Estrutura do modelo  
 
-This template defines one function `producer` and one Lift construct - `jobs`. The producer function is triggered by `http` event type, accepts JSON payloads and sends it to a SQS queue for asynchronous processing. The SQS queue is created by the `jobs` queue construct of the Lift plugin. The queue is set up with a "dead-letter queue" (to receive failed messages) and a `worker` Lambda function that processes the SQS messages.
+Este modelo define uma função `producer` e uma construção Lift - `jobs`. A função `producer` é acionada por um evento do tipo `http`, aceita payloads JSON e os envia para uma fila SQS para processamento assíncrono. A fila SQS é criada pela construção `jobs` do plugin Lift. A fila é configurada com uma "fila de mensagens mortas" (para armazenar mensagens com falha) e uma função Lambda `worker` que processa as mensagens da SQS.  
 
-To learn more:
+Para saber mais:  
 
-- about `http` event configuration options, refer to [http event docs](https://www.serverless.com/framework/docs/providers/aws/events/apigateway/)
-- about the `queue` construct, refer to [the `queue` documentation in Lift](https://github.com/getlift/lift/blob/master/docs/queue.md)
-- about the Lift plugin in general, refer to [the Lift project](https://github.com/getlift/lift)
-- about SQS processing with AWS Lambda, please refer to the official [AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html)
+- Sobre as opções de configuração do evento `http`, consulte a [documentação do evento http](https://www.serverless.com/framework/docs/providers/aws/events/apigateway/)  
+- Sobre a construção `queue`, consulte a [documentação da `queue` no Lift](https://github.com/getlift/lift/blob/master/docs/queue.md)  
+- Sobre o plugin Lift em geral, consulte o [projeto Lift](https://github.com/getlift/lift)  
+- Sobre o processamento SQS com AWS Lambda, consulte a [documentação oficial da AWS](https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html)  
 
-### Deployment
+### Implantacão  
 
-Install dependencies with:
-
-```
-npm install
-```
-
-Then deploy:
-
-```
-serverless deploy
-```
-
-After running deploy, you should see output similar to:
+Instale as dependências com:  
 
 ```bash
-Deploying aws-node-sqs-worker-project to stage dev (us-east-1)
+npm install
+```  
 
-✔ Service deployed to stack aws-node-sqs-worker-project-dev (175s)
+Depois, implante o serviço:  
+
+```bash
+serverless deploy
+```  
+
+Após a execução da implantação, você verá uma saída semelhante a:  
+
+```bash
+Implantando aws-node-sqs-worker-project no estágio dev (us-east-1)
+
+✔ Serviço implantado na stack aws-node-sqs-worker-project-dev (175s)
 
 endpoint: POST - https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/produce
 functions:
   producer: aws-node-sqs-worker-project-dev-producer (167 kB)
   jobsWorker: aws-node-sqs-worker-project-dev-jobsWorker (167 kB)
 jobs: https://sqs.us-east-1.amazonaws.com/000000000000/aws-node-sqs-worker-project-dev-jobs
-```
+```  
 
+_Nota_: Na forma atual, após a implantação, sua API é pública e pode ser acessada por qualquer pessoa. Para implantações em produção, você pode querer configurar um autorizador. Para mais detalhes sobre como fazer isso, consulte a [documentação do evento http](https://www.serverless.com/framework/docs/providers/aws/events/apigateway/).  
 
-_Note_: In current form, after deployment, your API is public and can be invoked by anyone. For production deployments, you might want to configure an authorizer. For details on how to do that, refer to [http event docs](https://www.serverless.com/framework/docs/providers/aws/events/apigateway/).
+### Invocação  
 
-### Invocation
-
-After successful deployment, you can now call the created API endpoint with `POST` request to invoke `producer` function:
+Após a implantação bem-sucedida, agora você pode chamar o endpoint da API criado com uma solicitação `POST` para acionar a função `producer`:  
 
 ```bash
 curl --request POST 'https://xxxxxx.execute-api.us-east-1.amazonaws.com/produce' --header 'Content-Type: application/json' --data-raw '{"name": "John"}'
-```
+```  
 
-In response, you should see output similar to:
+Como resposta, você verá uma saída semelhante a:  
 
 ```bash
-{"message": "Message accepted!"}
+{"message": "Mensagem aceita!"}
 ```
+
